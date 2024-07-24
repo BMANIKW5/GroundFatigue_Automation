@@ -1171,8 +1171,7 @@ class batman:
                             f.write(etree.tostring(root, pretty_print=True))
                             self.__logger.info(f"{output_file_name} created successfully.")
                         self.__shell_scripting(root, bumps_input_files, output_file_name)
-    
- 
+                        
                 roll_out_check = pd.Series(bumps_segment["Segment_Desc"][i]).str.contains("roll",flags=re.IGNORECASE,regex=True)[0]
                 if roll_out_check:
                     string = "FLR"
@@ -1204,28 +1203,20 @@ class batman:
                                 j.text = '11'+str(cntr+1)
                             for j in case.iter('bump_length'):
                                 j.text = str(bump_lengths[cntr])
-                            cntr += 1
-                            
+                            cntr += 1     
                             name = string+str(bumps_segment["Mission_ID"][i][0])+str(bumps_segment["Segment_ID"][i])
                             if bumps_FLR_sumry_flag == 0:
                                 bumps_FLR_sumry_flag = 1
                                 self.__soldyn_sumry("\n"+f"{std_name} - {name}" +"\n")
                                 self.__soldyn_sumry(f"{output_file_name}\n\n")
                             self.__soldyn_sumry(f"Case {cntr}:\n")
-                            self.__soldyn_sumry(f"maneuver_number = 11{cntr}\n")
-                            
+                            self.__soldyn_sumry(f"maneuver_number = 11{cntr}\n")              
                             self.__soldyn_sumry(f"mass_case_name = {bumps_segment['Mass_Case'][i]}\n")
-
                             self.__soldyn_sumry(f"horizontal_speed = {bumps_segment['VCAS'][i]}\n")
                             self.__soldyn_sumry(f"bump_length = {bump_lengths[cntr-1]}\n")
-
-        
                         et_str = ET.tostring(root, encoding='utf-8', method='xml')
                         root = etree.fromstring(et_str)
                         self.__closing_tags(root)
-        
-
-        
                         with open(output_file_name,'wb') as f:
                             f.write(etree.tostring(root, pretty_print=True))
                             self.__logger.info(f"{output_file_name} created successfully.")
@@ -1240,11 +1231,8 @@ class batman:
         bumps_1g_segment = bumps_1g_segment[bumps_1g_segment["Event_ID"].str.contains("1g",flags=re.IGNORECASE,regex=True)].reset_index(drop=True)
         if len(bumps_1g_segment)!=0:
             string = "FZ1"
-            bumps_1g_input_files = os.listdir(self.__soldyn_config)
-            
+            bumps_1g_input_files = os.listdir(self.__soldyn_config) 
             file_names = pd.Series(bumps_1g_input_files)[pd.Series([i[0:3]==string for i in bumps_1g_input_files])]
-           
-            
             if len(file_names)!=0:
                 file_names = file_names.reset_index(drop=True)
                 file_name = file_names[0]
@@ -1264,8 +1252,6 @@ class batman:
         
                 cntr=0
                 string = "FZ1"+str(bumps_1g_segment["Segment_ID"][0][0])+str(bumps_1g_segment["Mission_ID"][0][0])+'xx_'
-        
-    
                 temp_dir = self.__filename_issued(soldyn_input_path+"/", string, "", "")
                 directoryExists = os.path.exists(temp_dir)
                 if not directoryExists:
@@ -1273,9 +1259,7 @@ class batman:
                 path = temp_dir+"/"
                 output_file_name = path+os.path.basename(temp_dir)+".xml"
                 for i in range(len(bumps_1g_segment)):
-        
                     row_case = copy.deepcopy(case)
-        
                     for j in row_case.iter('maneuver_name'):
                         j.text = f'Rolling on Runway at {bumps_1g_segment["VCAS"][i]} knots'
                     for j in row_case.iter('mass_case_name'):
@@ -1284,11 +1268,8 @@ class batman:
                         j.text = str(bumps_1g_segment["VCAS"][i])
                     for j in row_case.iter('maneuver_number'):
                         j.text = str(bumps_1g_segment["Segment_ID"][0][0])+'1'+str(cntr+1)
-
-        
                     root.append(row_case)
                     cntr+=1
-                    
                     name = "FZ1"+str(bumps_1g_segment["Segment_ID"][0][0])+str(bumps_1g_segment["Mission_ID"][0][0])+'xx'
                     if bumps_FZ1_sumry_flag == 0:
                         bumps_FZ1_sumry_flag = 1
@@ -1300,16 +1281,10 @@ class batman:
                     self.__soldyn_sumry(f"mass_case_name = {bumps_1g_segment['Mass_Case'][i]}Z\n")
 
                     self.__soldyn_sumry(f"horizontal_speed = {bumps_1g_segment['VCAS'][i]}\n")
-                    
-
-            
                 root.find('Number_of_Cases').text = str(len(root.findall('Calculation_Case')))
-        
                 et_str = ET.tostring(root, encoding='utf-8', method='xml')
                 root = etree.fromstring(et_str)
                 self.__closing_tags(root)
-
-        
                 with open(output_file_name,'wb') as f:
                     f.write(etree.tostring(root, pretty_print=True))
                     self.__logger.info(f"{output_file_name} created successfully.")
@@ -1334,7 +1309,6 @@ class batman:
     
     
     def __batman_execution(self):
-        
         if self.__BatmanFlag == 0 and self.__Batman_execFlag == 1:
             self.__logger.info("Batman_ExecFlag is 1 but BatmanFlag is 0. Please check the flags.")
         
@@ -1354,7 +1328,6 @@ class batman:
     def __soldyn_execution(self):
         if self.__SoldynFlag == 0 and self.__Soldyn_execFlag == 1:
             self.__logger.info("Soldyn_ExecFlag is 1 but SoldynFlag is 0. Please check the flags.")
-        
         elif self.__SoldynFlag == 0 and self.__Soldyn_execFlag == 1:
             self.__logger.info("Shell scripts execution for SOLDYN started.")
             for i in range(len(self.__soldyn_exec_path_list)):
@@ -1386,11 +1359,8 @@ class batman:
             self.__logger.info("Soldyn setup started.")
             print("Soldyn setup started.")
             if self.__BatmanFlag == 0:
-                self.__grouping()
-                
+                self.__grouping()       
             path = self.__output_dir
-            
-            
             for i in range(len(self.__grouped_tables_names)):
                 GroupExist = os.path.exists(path+"/"+ self.__grouped_std_names[i])
                 if not GroupExist:
@@ -1432,17 +1402,12 @@ class batman:
         else:
             self.__logger.error("Please check the SoldynFlag")
             raise Exception("Please check the SoldynFlag")
-            
-
         directory_path = self.__output_dir
-
         try:
             self.__change_permissions_recursive(directory_path)
             print(f"\nPermissions have been set to 777 for all files and directories in {directory_path}")
         except OSError as e:
             print(f"Error: {e}")
-        
-        
         self.__batman_execution()
         self.__soldyn_execution()
         
